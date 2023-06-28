@@ -1280,20 +1280,14 @@ function savecuy()
             if tile.fg == IDPatokanPack or tile.bg == IDPatokanPack then
                 getBot():findPath(tile.x - 1, tile.y)
                 sleep(1000)
-                local flag = true
-                while flag do
                     if getBot():getItemCount(E) ~= 0 then
+                    repeat
                     getBot():sendPacket("action|drop\n|itemID|"..E, 2)
                     getBot():sendPacket("action|dialog_return\ndialog_name|drop_item\nitemID|"..E.."|\ncount|"..countpack, 2)
                     sleep(1000)
                     reconnectpack(atas,tile.x,tile.y)
-                    getBot():findPath(tile.x - 1, tile.y)
-                    sleep(1000)
-                    else
-                        flag = false
+                    until getBot():getItemCount(E) == 0 
                     end
-                end
-                break
             end
         end
     end
@@ -1335,12 +1329,13 @@ function saveseed()
         if tile.fg == IDPatokanSeed or tile.bg == IDPatokanSeed then
             getBot():findPath(tile.x - 1, tile.y)
             sleep(1000)
-            while getBot():getItemCount(seedid) > 100 do
+            if getBot():getItemCount(seedid) > 100 then   
+              repeat
                 getBot():sendPacket("action|drop\n|itemID|" .. seedid, 2)
                 getBot():sendPacket("action|dialog_return\ndialog_name|drop_item\nitemID|" .. seedid .. "|\ncount|100", 2)
                 sleep(1000)
                 reconnectseed(atas, tile.x, tile.y)
-                log("here"..getBot():getItemCount(seedid).."")
+                until getBot():getItemCount(seedid) < 100
             end
         end
     end
