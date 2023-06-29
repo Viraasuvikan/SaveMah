@@ -568,9 +568,11 @@ function botRest()
     for i = #TimeRest, 1, -1 do
         local curah = TimeRest[i]
         if current_hour == curah and not isTimeProcessed(curah) then
+            getBot():setBool("autoReconnect", false)
             getBot():disconnect()
             botshow("Bot Rest.. For " .. SleepRest .. " Minutes")
             sleep(SleepRest * 60 * 1000)
+            getBot():setBool("autoReconnect", true)
             getBot():reConnect()
             botshow("Bot Done Rest, Starting Back...")
             if getBot():getBotStatus() ~= Success then
