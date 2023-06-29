@@ -916,8 +916,7 @@ nuked = false
 function warp(world,id)
 if wid == "" then
 warpdoang(world,id)
-return
-end
+else
     cok = 0    
 
     while getBot():getWorld().name:upper() ~= world:upper() and not nuked do
@@ -925,25 +924,18 @@ end
             getBot():reConnect()
             sleep(5000)
         end
-        getBot():sendPacket("action|join_request\nname|"..world:upper().."\ninvitedWorld|0",3)
+        getBot():sendPacket("action|join_request\nname|"..world:upper().."|"..id:upper().."\ninvitedWorld|0",3)
+        sleep(5000)
+        getBot():sendPacket("action|join_request\nname|"..world:upper().."|"..id:upper().."\ninvitedWorld|0",3)
         sleep(5000)
         if cok == 10 then
             nuked = true
         else
             cok = cok + 1
         end
-    end
-    if wid ~= "" and not nuked then
-        while getBot():getTile(math.floor(getBot():getLocal().pos.x / 32),math.floor(getBot():getLocal().pos.y / 32)).fg == 6 and not nuked do
-            while getBot():getBotStatus() ~= Success do
-                getBot():reConnect()
-                sleep(5000)
-            end
-            getBot():sendPacket("action|join_request\nname|"..world:upper().."|"..id:upper().."\ninvitedWorld|0",3)
-            sleep(1000)
         end
-    end
 end
+    end
 
 function restoretime()
 for i = 1,#TimeRest do
