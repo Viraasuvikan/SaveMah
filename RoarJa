@@ -1294,6 +1294,7 @@ function CekTilePack(x,y,num)
 end
 
 function savecuy()
+atas = getBot():getWorld().name
     for _,pack in pairs(packitemid) do
         for _,tile in pairs(getBot():getTiles()) do
             if tile.fg == IDPatokanPack or tile.bg == IDPatokanPack then
