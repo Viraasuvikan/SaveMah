@@ -1515,7 +1515,7 @@ checkdata()
 end
 if checknya then
 takepick()
-warp(world,"")
+warp(world,wid)
 if not nuked then
 clearTable(processedTimes)
 botshow("Bot Start")
