@@ -908,11 +908,18 @@ end
 function warpdoang(world,id)
 getBot():sendPacket("action|join_request\nname|"..world:upper().."|"..id:upper().."\ninvitedWorld|0",3)
 sleep(4000)
+getBot():sendPacket("action|join_request\nname|"..world:upper().."|"..id:upper().."\ninvitedWorld|0",3)
+sleep(4000)
 end
 
 nuked = false 
 function warp(world,id)
-    cok = 0
+if wid == "" then
+warpdoang(world,id)
+return
+end
+    cok = 0    
+
     while getBot():getWorld().name:upper() ~= world:upper() and not nuked do
         while getBot():getBotStatus() ~= Success do
             getBot():reConnect()
@@ -926,7 +933,7 @@ function warp(world,id)
             cok = cok + 1
         end
     end
-    if id ~= "" and not nuked then
+    if wid ~= "" and not nuked then
         while getBot():getTile(math.floor(getBot():getLocal().pos.x / 32),math.floor(getBot():getLocal().pos.y / 32)).fg == 6 and not nuked do
             while getBot():getBotStatus() ~= Success do
                 getBot():reConnect()
@@ -983,6 +990,9 @@ botshow("Bot Taking Pickaxe..")
     end
     getBot():move(LEFT,1)
     sleep(1000)
+   getBot():move(UP,1)
+   sleep(500)
+   getBot():move(DOWN,1)
     while getBot():getItemCount(98) > 1 do
     getBot():sendPacket("action|drop\n|itemID|98",2)
     sleep(1000)
@@ -1272,22 +1282,46 @@ end
 end
 end
 
+function round(n)
+    return n % 1 > 0.5 and math.ceil(n) or math.floor(n)
+end
+
+function CekTilePack(x,y,num)
+    local count = 0
+    local stack = 0
+    for _,obj in pairs(getBot():getObjects()) do
+        if round(obj.pos.x / 32) == x and math.floor(obj.pos.y / 32) == y then
+            count = count + obj.count
+            stack = stack + 1
+        end
+    end
+    if stack < 20 and count <= (4000 - num) then
+        return true
+    end
+    return false
+end
+
 function savecuy()
-    atas = getBot():getWorld().name
-    for _, E in ipairs(packitemid) do
-        countpack = getBot():getItemCount(E)
-        for _, tile in pairs(getBot():getTiles()) do
+    for _,pack in pairs(packitemid) do
+        for _,tile in pairs(getBot():getTiles()) do
             if tile.fg == IDPatokanPack or tile.bg == IDPatokanPack then
-                getBot():findPath(tile.x - 1, tile.y)
-                sleep(1000)
-                    if getBot():getItemCount(E) ~= 0 then
-                    repeat
-                    getBot():sendPacket("action|drop\n|itemID|"..E, 2)
-                    getBot():sendPacket("action|dialog_return\ndialog_name|drop_item\nitemID|"..E.."|\ncount|"..countpack, 2)
-                    sleep(1000)
-                    reconnectpack(atas,tile.x,tile.y)
-                    until getBot():getItemCount(E) == 0 
+                if CekTilePack(tile.x,tile.y,getBot():getItemCount(pack)) then
+                    while math.floor(getBot():getLocal().pos.x / 32) ~= (tile.x - 1) or math.floor(getBot():getLocal().pos.y / 32) ~= tile.y do
+                        getBot():findPath(tile.x - 1,tile.y)
+                        sleep(1000)
+                         reconnectpack(atas, tile.x, tile.y)
                     end
+                    while getBot():getItemCount(pack) > 0 and CekTilePack(tile.x,tile.y,getBot():getItemCount(pack)) do
+                        getBot():sendPacket("action|drop\n|itemID|"..pack,2)
+                        sleep(1000)
+                        getBot():sendPacket("action|dialog_return\ndialog_name|drop_item\nitemID|"..pack.."|\ncount|"..getBot():getItemCount(pack),2)
+                        sleep(1000)
+                        reconnectpack(atas, tile.x, tile.y)
+                    end
+                end
+            end
+            if getBot():getItemCount(pack) == 0 then
+                break
             end
         end
     end
@@ -1320,26 +1354,47 @@ local kiwar = 0
 return kiwar
 end
 
+function CekTileSeeds(x,y,num)
+    local count = 0
+    local stack = 0
+    for _,obj in pairs(getBot():getObjects()) do
+        if round(obj.pos.x / 32) == x and math.floor(obj.pos.y / 32) == y then
+            count = count + obj.count
+            stack = stack + 1
+        end
+    end
+    if count <= (4000 - num) then
+        return true
+    end
+    return false
+end
+
 function saveseed()
-    botpack("Saving Seeds")
-    atas = getBot():getWorld().name
-    getBot():autoCollect(4, false)
-    warp(WorldSaveSeed, WorldSaveSeedID)
+getBot():autoCollect(4,false)
+botpack("Saving Seeds")
+atas = getBot():getWorld().name
+        warp(WorldSaveSeed,WorldSaveSeedID)
     for _, tile in pairs(getBot():getTiles()) do
-        if tile.fg == IDPatokanSeed or tile.bg == IDPatokanSeed then
-            getBot():findPath(tile.x - 1, tile.y)
-            sleep(1000)
-            if getBot():getItemCount(seedid) > 100 then   
-              repeat
-                getBot():sendPacket("action|drop\n|itemID|" .. seedid, 2)
-                getBot():sendPacket("action|dialog_return\ndialog_name|drop_item\nitemID|" .. seedid .. "|\ncount|100", 2)
-                sleep(1000)
-                reconnectseed(atas, tile.x, tile.y)
-                until getBot():getItemCount(seedid) < 100
+        if tile.fg == IDPatokanSeed or tile.bg == IDPatokanSeed then 
+           if CekTileSeeds(tile.x,tile.y,100) then
+                while math.floor(getBot():getLocal().pos.x / 32) ~= (tile.x - 1) or math.floor(getBot():getLocal().pos.y / 32) ~= tile.y do
+                    getBot():findPath(tile.x - 1,tile.y)
+                    sleep(100)
+                    reconnectseed(atas, tile.x, tile.y)
+                end
+                while getBot():getItemCount(seedid) > 100 and CekTileSeeds(tile.x,tile.y,100) do
+                    getBot():sendPacket("action|drop\n|itemID|"..seedid,2)
+                    sleep(1000)
+                    getBot():sendPacket("action|dialog_return\ndialog_name|drop_item\nitemID|"..seedid.."|\ncount|100",2)
+                    sleep(1000)
+                    reconnectseed(atas, tile.x, tile.y)
+                end
+            end
+        if getBot():getItemCount(seedid) <= 100 then
+                break
             end
         end
     end
-    
     sampah()
     seeddrop = SeedsScanner(seedid)
     botpack("Success Saving Seeds")
@@ -1468,7 +1523,7 @@ checkdata()
 end
 if checknya then
 takepick()
-warp(world,wid)
+warp(world,"")
 if not nuked then
 clearTable(processedTimes)
 botshow("Bot Start")
