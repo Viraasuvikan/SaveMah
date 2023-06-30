@@ -583,7 +583,7 @@ function botRest()
             end
             if getBot():getBotStatus() == Success then
                 table.insert(processedTimes, curah) -- Menyimpan waktu yang telah diproses
-                warp(rumah, wid:upper())
+                warpdoang(rumah, wid:upper())
                 jalan()
                 break -- Keluar dari loop jika jam cocok
             end
