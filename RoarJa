@@ -19,6 +19,7 @@ skiptutorial = "false"
 seeddata = ""
 rumah = ""
 totaldropnya = 0
+ChangeIndex = 1
 proxyIndex = 1
 proxyIndexAdd = 1
 proxyIndexAddAttempt = 0
@@ -518,7 +519,7 @@ if ChangeBotWhenMaxLevel then
             sleep(100)
             getBot():remove()
             sleep(5000)
-                for _,botnama in pairs(BotListChange) do
+             for _, botnama in pairs(BotListChange) do
                         if useproxy then
              local proxy = proxy[proxyIndex]
                             addBot(botnama, PassBotList, proxy)
@@ -545,15 +546,18 @@ if ChangeBotWhenMaxLevel then
                             sleep(100)
                             getBot():remove()
                         end
+                    if getBot():getLocal().level >= maxlevel then
+                   getBot():remove()
+                     end
                     elseif getBot():getLocal().level < maxlevel then
                         botshow("Success Changing Bot")
                         sleep(100)
-                        warp(oldbotworld,wid:upper())
+                        warp(rumah,wid)
                         sleep(4000)
                         getBot():autoCollect(4,true)
                         sleep(50)
                         jalan()
-                        break
+                  break
                     end
                 end 
         end
@@ -917,27 +921,36 @@ end
 nuked = false 
 function warp(world,id)
 if wid == "" then
-warpdoang(world,id)
-else
-    cok = 0    
-
-    while getBot():getWorld().name:upper() ~= world:upper() and not nuked do
+id = ""
+end
+    cok = 0
+while getBot():getWorld().name:upper() ~= string.match(world:upper(), "([^|]+)") and not nuked do
         while getBot():getBotStatus() ~= Success do
             getBot():reConnect()
             sleep(5000)
         end
-        getBot():sendPacket("action|join_request\nname|"..world:upper().."|"..id:upper().."\ninvitedWorld|0",3)
-        sleep(5000)
-        getBot():sendPacket("action|join_request\nname|"..world:upper().."|"..id:upper().."\ninvitedWorld|0",3)
+        getBot():sendPacket("action|join_request\nname|"..world:upper().."\ninvitedWorld|0",3)
         sleep(5000)
         if cok == 10 then
             nuked = true
         else
             cok = cok + 1
         end
-        end
-end
     end
+    if id ~= "" and not nuked then
+        while getBot():getTile(math.floor(getBot():getLocal().pos.x / 32),math.floor(getBot():getLocal().pos.y / 32)).fg == 6 and not nuked do
+            while getBot():getBotStatus() ~= Success do
+                getBot():reConnect()
+                sleep(5000)
+            end
+            getBot():sendPacket("action|join_request\nname|"..world:upper().."|"..id:upper().."\ninvitedWorld|0",3)
+            sleep(1000)
+        end
+    else
+   getBot():sendPacket("action|join_request\nname|"..world:upper().."|"..id:upper().."\ninvitedWorld|0",3)
+            sleep(1000)
+    end
+end
 
 function restoretime()
 for i = 1,#TimeRest do
