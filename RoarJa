@@ -1374,7 +1374,7 @@ function CekTileSeeds(x,y,num)
             stack = stack + 1
         end
     end
-    if count <= (4000 - num) then
+    if count <= (3800 - num) then
         return true
     end
     return false
