@@ -1206,7 +1206,6 @@ function breaks()
 cekbp()
 coptrashs()
 atas = getBot():getWorld().name
-findPath(posXBreak,posYBreak)
 getBot():autoCollect(4,true)
 while getBot():getItemCount(seedid-1) > 0 do
 reconnect(posX-1,posY-1)
