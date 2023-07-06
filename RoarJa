@@ -37,32 +37,32 @@ function findPath(x,y)
     if posY > 6 then
         for i = 0, math.floor(posY/4)do
             py = py + 4
-            sleep(100)
+            sleep(900)
             getBot():findPath(px,py)
         end
     elseif posY <-6 then
         for i = 1,  math.floor(posY/-4) do
             py = py - 4
-            sleep(100)
+            sleep(900)
             getBot():findPath(px,py)
         end
     end
     if posX > 6 then
         for i = 1, math.floor(posX/4)do
             px = px + 4
-            sleep(100)
+            sleep(900)
             getBot():findPath(px,py)
         end
     elseif posX <-6 then
         for i = 1,  math.floor(posX/-4) do
             px = px - 4
-            sleep(100)
+            sleep(900)
             getBot():findPath(px,py)
         end
     end
-    sleep(50)
+    sleep(500)
     getBot():findPath(x,y)
-    sleep(50)
+    sleep(500)
 end
 
 if AutoAddBot then
