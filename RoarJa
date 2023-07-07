@@ -1091,6 +1091,7 @@ end
 function breaks()
 cekbp()
 coptrashs()
+findPath(posXBreak,posYBreak)
 atas = getBot():getWorld().name
 getBot():autoCollect(4,true)
 while getBot():getItemCount(seedid-1) > 0 do
