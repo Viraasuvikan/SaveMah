@@ -29,59 +29,6 @@ emoji = ""
 loopnya = 0
 checknya = false
 
-function findPath(x,y)
-    local px = math.floor(getBot():getLocal().pos.x/32)
-    local py = math.floor(getBot():getLocal().pos.y/32)
-    local posX = x - px
-    local posY = y - py
-    if posY > 4 then
-        for i = 0, math.floor(posY/1)do
-            py = py + 1
-            sleep(200)
-            getBot():findPath(px,py)
-        end
-    elseif posY <-4 then
-        for i = 1,  math.floor(posY/-1) do
-            py = py - 1
-            sleep(200)
-            getBot():findPath(px,py)
-        end
-    end
-    if posX > 4 then
-        for i = 1, math.floor(posX/1)do
-            px = px + 1
-            sleep(150)
-            getBot():findPath(px,py)
-        end
-    elseif posX <-4 then
-        for i = 1,  math.floor(posX/-1) do
-            px = px - 1
-            sleep(200)
-            getBot():findPath(px,py)
-        end
-    end
-    sleep(150)
-    getBot():findPath(x,y)
-    sleep(150)
-end
-
-function TagBan(kata)
-if not UseWebhookTagBan then
-return
-else
-    local text = [[
-        $webHookUrl = "]]..WhTagBan..[["
-        $payload = @{
-    content = "]]..kata..[["
-        }
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Invoke-RestMethod -Uri $webHookUrl -Body ($payload | ConvertTo-Json -Depth 4) -Method Post -ContentType 'application/json'
-    ]]
-    local file = io.popen("powershell -command -", "w")
-    file:write(text)
-    file:close()
-end
-end
 
 if AutoAddBot then
 for i = 1, #ListBotAdd do
@@ -164,7 +111,7 @@ end
 
 function waktuWorld()
     strWaktu = ""
-        for _,world in pairs(WorldList) do
+        for _,world in ipairs(WorldList) do
 strWaktu = strWaktu .."\n" .. world:upper()  .. " ( " .. ("<:pro_timeout:1100160755287982150> " .. (waktu[world] or "?")) .. " | " .. ":palm_tree: : " .. (pohon[world] or "0") .. " | " .. ":gem: : " .. (berlian[world] or "0") .. " )"
     end
 return strWaktu
@@ -172,7 +119,7 @@ end
 
    function Fossil()
    local fossil = 0
-    for _,tile in pairs(getBot():getTiles()) do
+    for _,tile in ipairs(getBot():getTiles()) do
         if tile.fg == 3918 then
             fossil = fossil + 1
         end
@@ -182,7 +129,7 @@ end
 
 function tre()
   local readytree = 0
-      for _,til in pairs(getBot():getTiles()) do
+      for _,til in ipairs(getBot():getTiles()) do
           if til.fg == seedid and getBot():canHarvest(til.x,til.y) then
           readytree = readytree + 1
           end
@@ -192,7 +139,7 @@ function tre()
 
 function totaltree()
   local readytree = 0
-      for _,til in pairs(getBot():getTiles()) do
+      for _,til in ipairs(getBot():getTiles()) do
           if til.fg == seedid then
           readytree = readytree + 1
           end
@@ -203,13 +150,14 @@ function totaltree()
 
    function un()
  unreadytree = 0
-for _, t in pairs(getBot():getTiles()) do
+for _, t in ipairs(getBot():getTiles()) do
 if t.fg == seedid and not getBot():canHarvest(t.x,t.y) then
 unreadytree = unreadytree + 1
 end
 end
 return unreadytree
 end
+
 
 function cekemoji()
 if seedid == 4585 then
@@ -257,6 +205,24 @@ function status()
     end
 end
 
+
+function TagBan(kata)
+if not UseWebhookTagBan then
+return
+else
+    local text = [[
+        $webHookUrl = "]]..WhTagBan..[["
+        $payload = @{
+    content = "]]..kata..[["
+        }
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-RestMethod -Uri $webHookUrl -Body ($payload | ConvertTo-Json -Depth 4) -Method Post -ContentType 'application/json'
+    ]]
+    local file = io.popen("powershell -command -", "w")
+    file:write(text)
+    file:close()
+end
+end
 
 totalpack = 0
 seeddrop = 0
@@ -470,9 +436,9 @@ function soilmode()
     if IgnoreGems then
       getBot():setBool("ignoreGem", true)
       getBot():autoCollect(4, true)
-      for _, tile in pairs(getBot():getTiles()) do
+      for _, tile in ipairs(getBot():getTiles()) do
         if getBot():getTile(tile.x, tile.y - 1).fg == seedid and getBot():canHarvest(tile.x, tile.y - 1) and getBot():getItemCount(seedid - 1) < 165 then
-            findPath(tile.x, tile.y - 1)
+            getBot():findPath(tile.x, tile.y - 1)
             while getBot():getTile(tile.x, tile.y - 1).fg == seedid and getBot():canHarvest(tile.x, tile.y - 1) do
               reconnect(posX - 1, posY - 1)
               getBot():hitTile(tile.x, tile.y - 1)
@@ -487,10 +453,10 @@ function soilmode()
       end
     else
       getBot():autoCollect(4, true)
-      for _, tile in pairs(getBot():getTiles()) do
+      for _, tile in ipairs(getBot():getTiles()) do
         if getBot():getTile(tile.x, tile.y - 1).fg == seedid and getBot():canHarvest(tile.x, tile.y - 1) and getBot():getItemCount(seedid - 1) < 165 then
           if not blacklistTiles or check(tile.x, tile.y) then
-            findPath(tile.x, tile.y - 1)
+            getBot():findPath(tile.x, tile.y - 1)
             while getBot():getTile(tile.x, tile.y - 1).fg == seedid and getBot():canHarvest(tile.x, tile.y - 1) do
               reconnect(posX - 1, posY - 1)
               getBot():hitTile(tile.x, tile.y - 1)
@@ -535,9 +501,9 @@ if ChangeBotWhenMaxLevel then
             oldbotname = getBot():getLocal().name
             botshow("Bot Level : "..getBot():getLocal().level.." Changing Bot...")
             warp(WorldSaveSeed,WorldSaveSeedID)
-            for _, tile in pairs(getBot():getTiles()) do
+            for _, tile in ipairs(getBot():getTiles()) do
             if tile.fg == IDPatokanSeed then
-            findPath(tile.x+1,tile.y)
+            getBot():findPath(tile.x+1,tile.y)
             sleep(500)
      end
   end
@@ -555,7 +521,7 @@ if ChangeBotWhenMaxLevel then
             sleep(100)
             getBot():remove()
             sleep(5000)
-             for _, botnama in pairs(BotListChange) do
+             for _, botnama in ipairs(BotListChange) do
                         if useproxy then
              local proxy = proxy[proxyIndex]
                             addBot(botnama, PassBotList, proxy)
@@ -644,21 +610,21 @@ end
 
 function cekbl(world)
     blist = {}
-    for _,tile in pairs(getBot():getTiles()) do
+    for _,tile in ipairs(getBot():getTiles()) do
         if tile.fg == 6 then
             doorX = tile.x
             doorY = tile.y
         end
     end
     if blacklistTiles then
-        for _,tile in pairs(blacklistlist) do
+        for _,tile in ipairs(blacklistlist) do
             table.insert(blist,{x = doorX + tile.x, y = doorY + tile.y})
         end
     end
 end
 
 function check(x,y)
-    for _,tile in pairs(blist) do
+    for _,tile in ipairs(blist) do
         if x == tile.x and y == tile.y then
             return false
         end
@@ -772,7 +738,7 @@ end
 
 function backpos(x,y)
 werkd = rumah
-    for _, tile in pairs(getBot():getTiles()) do
+    for _, tile in ipairs(getBot():getTiles()) do
        if getBot():getTile(math.floor(getBot():getLocal().pos.x / 32),math.floor(getBot():getLocal().pos.y / 32)).fg == 6 then
             repeat
             getBot():sendPacket("action|join_request\nname|".. werkd .. "|" .. wid:upper().."\ninvitedWorld|0",3)
@@ -780,7 +746,7 @@ werkd = rumah
             until getBot():getTile(math.floor(getBot():getLocal().pos.x / 32),math.floor(getBot():getLocal().pos.y / 32)).fg ~= 6
             if x and y and getBot():getBotStatus() == Success and getBot():getWorld().name:upper() == werkd:upper() then
                 repeat
-                    findPath(x,y)
+                    getBot():findPath(x,y)
                     sleep(400)
                 until math.floor(getBot():getLocal().pos.x / 32) == x or math.floor(getBot():getLocal().pos.y / 32) == y
             end
@@ -877,10 +843,10 @@ function harvest()
 soilmode()
 coptrashs()
 getBot():autoCollect(4,true)
-for _, tile in pairs(getBot():getTiles()) do
+for _, tile in ipairs(getBot():getTiles()) do
 if getBot():getTile(tile.x,tile.y-1).fg == seedid and getBot():canHarvest(tile.x,tile.y-1) and getBot():getItemCount(seedid-1) < 165 then
 if not blacklistTiles or check(tile.x,tile.y) then
-findPath(tile.x,tile.y-1)
+getBot():findPath(tile.x,tile.y-1)
 while getBot():getTile(tile.x,tile.y - 1).fg == seedid and getBot():canHarvest(tile.x,tile.y-1) do
 reconnect(tile.x,tile.y-1)
 getBot():hitTile(tile.x,tile.y-1)
@@ -900,15 +866,15 @@ addBot(GrowidTakeGems,PasswordGrowid)
       sleep(10000)
 warp(atas,wid:upper())
       getBot():autoCollect(5,true)
-      findPath(0,y)
-for _,rah in pairs(getBot():getObjects()) do
+      getBot():findPath(0,y)
+for _,rah in ipairs(getBot():getObjects()) do
         if rah.id == 112 then
           while rah.count > 0 do
             for i =1,33 do
               getBot():move(RIGHT,3)
             end
             y = y + 2
-            findPath(0,y)
+            getBot():findPath(0,y)
           end
           if rah.count == 0 then
             getBot():remove()
@@ -923,11 +889,11 @@ for _,rah in pairs(getBot():getObjects()) do
 
 function plant()
 coptrashs()
-for _, tile in pairs(getBot():getTiles()) do
+for _, tile in ipairs(getBot():getTiles()) do
 if tile.fg ~= 0 and tile.fg ~= seedid and getBot():getTile(tile.x, tile.y-1).fg ~= seedid-1 and getBot():getTile(tile.x, tile.y-1).fg ~= seedid and getBot():getItemCount(seedid) > 0 then
 if getBot():getTile(tile.x, tile.y-1).fg == 0 then
 if not blacklistTiles or check(tile.x,tile.y) then
-findPath(tile.x, tile.y-1)
+getBot():findPath(tile.x, tile.y-1)
 sleep(20)
 if getBot():getTile(math.floor(getBot():getLocal().pos.x / 32), math.floor(getBot():getLocal().pos.y / 32)).fg == 0 then
 reconnect(tile.x,tile.y-1)
@@ -1018,16 +984,15 @@ botshow("Bot Taking Pickaxe..")
     warp(WorldPick,WorldPickID)
     sleep(100)
     while getBot():getItemCount(98) == 0 do
-        for _,obj in pairs(getBot():getObjects()) do
+        for _,obj in ipairs(getBot():getObjects()) do
             if obj.id == 98 then
-                findPath(math.floor(obj.pos.x / 32),math.floor(obj.pos.y / 32))
+                getBot():findPath(math.floor(obj.pos.x / 32),math.floor(obj.pos.y / 32))
                 sleep(1000)
                 getBot():autoCollect(4,true)
                 sleep(1000)
+                getBot():autoCollect(4,false)
             end
             if getBot():getItemCount(98) > 0 then
-                getBot():autoCollect(4,false)
-               sleep(500)
                 break
             end
         end
@@ -1037,6 +1002,9 @@ botshow("Bot Taking Pickaxe..")
    getBot():move(UP,1)
    sleep(500)
    getBot():move(DOWN,1)
+if getBot():getItemCount(98) > 0 then
+getBot():autoCollect(4,false)
+end
     while getBot():getItemCount(98) > 1 do
     getBot():sendPacket("action|drop\n|itemID|98",2)
     sleep(1000)
@@ -1052,15 +1020,15 @@ end
 function joinworld()
 botshow("World Finish, Joining World...")
     sleep(100)
-    for _,bimba in pairs(WorldForJoin) do
+    for _,bimba in ipairs(WorldForJoin) do
         warp(bimba,"")
         sleep(4000)
     end
 end
 
 function autoban()
- for _, peler in pairs(getBot():getPlayers()) do
-        for _, own in pairs(WhiteList) do
+ for _, peler in ipairs(getBot():getPlayers()) do
+        for _, own in ipairs(WhiteList) do
             if peler.name:upper() == own:upper() and peler.name:upper() ~= getBot():getLocal().name:upper() then
                 getBot():say("/ban "..peler.name)
                 sleep(3000) 
@@ -1071,8 +1039,8 @@ function autoban()
 
 function autoleave()
 if AutoLeave then
-for _, peler in pairs(getBot():getPlayers()) do
-for _, own in pairs(WhiteList) do
+for _, peler in ipairs(getBot():getPlayers()) do
+for _, own in ipairs(WhiteList) do
        if peler.name:upper() == own:upper() and peler.name:upper() ~= getBot():getLocal().name:upper() then
 if peler > MaxPeople then
 getBot():sendPacket(3,"action|join_request\nname|" .. EXIT .. "\ninvitedWorld|0")
@@ -1089,8 +1057,8 @@ end
 function breaks()
 cekbp()
 coptrashs()
-findPath(posXBreak,posYBreak)
 atas = getBot():getWorld().name
+getBot():findPath(posXBreak,posYBreak)
 getBot():autoCollect(4,true)
 while getBot():getItemCount(seedid-1) > 0 do
 reconnect(posX-1,posY-1)
@@ -1179,7 +1147,7 @@ end
 
 function foregraund(itemid)
       local count = 0
-      for _, tile in pairs(getBot():getTiles()) do
+      for _, tile in ipairs(getBot():getTiles()) do
         if tile.fg == itemid and getBot():canHarvest(tile.x,tile.y) then
       if not blacklistTiles or check(tile.x,tile.y+1) then
           count = count + 1
@@ -1204,7 +1172,7 @@ end
 while not found do
 sleep(5000)
 botshow("Waiting Owner...")
-    for _, plr in pairs(getBot():getPlayers()) do
+    for _, plr in ipairs(getBot():getPlayers()) do
  if plr.name == "`w"..OwnerName.."``" or plr.name == "`2"..OwnerName.."``" then
         found = true
         getBot():say("`2Owner Found, See You ~~ Kirana (tongue)")
@@ -1218,13 +1186,13 @@ end
 
 function backpospack(worldnya,x,y)
 werkd = worldnya
-    for _, tile in pairs(getBot():getTiles()) do
+    for _, tile in ipairs(getBot():getTiles()) do
         if tile.fg == 6 then
             getBot():sendPacket("action|join_request\nname|".. werkd .. "|" .. WorldSavePackID.."\ninvitedWorld|0",3)
             sleep(1000)
             if x and y and getBot():getBotStatus() == Success and getBot():getWorld().name:upper() == werkd:upper() then
                 repeat
-                    findPath(x,y)
+                    getBot():findPath(x,y)
                     sleep(100)
                 until math.floor(getBot():getLocal().pos.x / 32) == x or math.floor(getBot():getLocal().pos.y / 32) == y
             end
@@ -1243,13 +1211,13 @@ end
 
 function backposseed(worldnya,x,y)
 werkd = worldnya
-    for _, tile in pairs(getBot():getTiles()) do
+    for _, tile in ipairs(getBot():getTiles()) do
         if tile.fg == 6 then
             getBot():sendPacket("action|join_request\nname|".. werkd .. "|" .. WorldSaveSeedID.."\ninvitedWorld|0",3)
             sleep(1000)
             if x and y and getBot():getBotStatus() == Success and getBot():getWorld().name:upper() == werkd:upper() then
                 repeat
-                    findPath(x,y)
+                    getBot():findPath(x,y)
                     sleep(100)
                 until math.floor(getBot():getLocal().pos.x / 32) == x or math.floor(getBot():getLocal().pos.y / 32) == y
             end
@@ -1333,7 +1301,7 @@ end
 function CekTilePack(x,y,num)
     local count = 0
     local stack = 0
-    for _,obj in pairs(getBot():getObjects()) do
+    for _,obj in ipairs(getBot():getObjects()) do
         if round(obj.pos.x / 32) == x and math.floor(obj.pos.y / 32) == y then
             count = count + obj.count
             stack = stack + 1
@@ -1347,12 +1315,12 @@ end
 
 function savecuy()
 atas = getBot():getWorld().name
-    for _,pack in pairs(packitemid) do
-        for _,tile in pairs(getBot():getTiles()) do
+    for _,pack in ipairs(packitemid) do
+        for _,tile in ipairs(getBot():getTiles()) do
             if tile.fg == IDPatokanPack or tile.bg == IDPatokanPack then
                 if CekTilePack(tile.x,tile.y,getBot():getItemCount(pack)) then
                     while math.floor(getBot():getLocal().pos.x / 32) ~= (tile.x - 1) or math.floor(getBot():getLocal().pos.y / 32) ~= tile.y do
-                        findPath(tile.x - 1,tile.y)
+                        getBot():findPath(tile.x - 1,tile.y)
                         sleep(1000)
                          reconnectpack(atas, tile.x, tile.y)
                     end
@@ -1375,7 +1343,7 @@ end
 function sampah()
 if next(CustomItem) ~= nil then
 getBot():move(UP,1)
-for _, sampah in pairs(CustomItem) do
+for _, sampah in ipairs(CustomItem) do
 royal = getBot():getItemCount(sampah)
     while getBot():getItemCount(sampah) ~= 0 do
     getBot():sendPacket("action|drop\nitemID|" .. sampah,2)
@@ -1391,7 +1359,7 @@ end
 
 function SeedsScanner(ItemID)
 local kiwar = 0
-    for _, object in pairs(getBot():getObjects()) do 
+    for _, object in ipairs(getBot():getObjects()) do 
         if object.id == ItemID then
       kiwar = kiwar + object.count
         end
@@ -1402,7 +1370,7 @@ end
 function CekTileSeeds(x,y,num)
     local count = 0
     local stack = 0
-    for _,obj in pairs(getBot():getObjects()) do
+    for _,obj in ipairs(getBot():getObjects()) do
         if round(obj.pos.x / 32) == x and math.floor(obj.pos.y / 32) == y then
             count = count + obj.count
             stack = stack + 1
@@ -1419,11 +1387,11 @@ getBot():autoCollect(4,false)
 botpack("Saving Seeds")
 atas = getBot():getWorld().name
         warp(WorldSaveSeed,WorldSaveSeedID)
-    for _, tile in pairs(getBot():getTiles()) do
+    for _, tile in ipairs(getBot():getTiles()) do
         if tile.fg == IDPatokanSeed or tile.bg == IDPatokanSeed then 
            if CekTileSeeds(tile.x,tile.y,100) then
                 while math.floor(getBot():getLocal().pos.x / 32) ~= (tile.x - 1) or math.floor(getBot():getLocal().pos.y / 32) ~= tile.y do
-                    findPath(tile.x - 1,tile.y)
+                    getBot():findPath(tile.x - 1,tile.y)
                     sleep(100)
                     reconnectseed(atas, tile.x, tile.y)
                 end
@@ -1548,7 +1516,7 @@ end
 end
 
 function clearTable(tbl)
-    for k in pairs(tbl) do
+    for k in ipairs(tbl) do
         tbl[k] = nil
     end
 end
@@ -1556,7 +1524,7 @@ end
 function startwoi()
 while true do
 if getBot():getEnetStatus() == Connected then
-for index,world in pairs(worlds) do
+for index,world in ipairs(worlds) do
 emoji = cekemoji()
 rumah = world
 waktuWorld()
